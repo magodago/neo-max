@@ -173,22 +173,19 @@ def _ensure_mago_imagen_gemini(mago: dict, dia: int, out_dir: Path, config: dict
                 "Estilo ilustración editorial: retrato desde hombros arriba, cara bien visible y centrada, "
                 "fondo de teatro o cortinas oscuras, sin texto. La imagen debe mostrar claramente al mago, no objetos ni escenarios vacíos."
             )
-            rel = generate_image(prompt, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=6)
+            rel = generate_image(prompt, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=2)
             if not rel:
-                # Fallback: prompt más corto en inglés (algunos magos fallan con el largo; Gemini responde mejor a prompts simples)
                 prompt_fallback = f"Editorial portrait of {nombre}, famous magician, head and shoulders, soft colors, no text."
-                rel = generate_image(prompt_fallback, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=4)
+                rel = generate_image(prompt_fallback, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=1)
+            if not rel:
+                prompt_generic = "Friendly cartoon portrait of a magician, head and shoulders, stage curtains background, purple and gold tones, no text."
+                rel = generate_image(prompt_generic, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=1)
             if rel:
                 mago["foto"] = rel
                 return
         except Exception:
             pass
-    # 2) Fallback: imagen de Wikipedia
-    wiki_url = _fetch_wikipedia_photo(nombre)
-    if wiki_url:
-        mago["foto"] = wiki_url
-        return
-    # 3) Placeholder con el nombre del mago (no genérico "Magia")
+    # 2) No usar Wikipedia: estilo inconsistente y a veces problemas de derechos. Usar placeholder con el nombre del mago.
     mago["foto"] = _placeholder_photo_url(nombre)
 
 
