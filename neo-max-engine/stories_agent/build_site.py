@@ -466,6 +466,76 @@ def add_chapter_to_serial_site(
     return slug
 
 
+def rebuild_serial_index(output_dir: Path) -> None:
+    """Regenera solo index.html y sitemap.xml desde serial_state (útil tras corregir títulos en state)."""
+    try:
+        from serial_state import load_state
+        state = load_state()
+    except Exception:
+        return
+    chapters = state.get("chapters", [])
+    if not chapters:
+        return
+    config = _load_config()
+    base_url = (config.get("base_url") or "").rstrip("/")
+    serial_title = state.get("serial_title", "Serie")
+    theme = state.get("theme", "terror")
+    subscriber_count = state.get("subscriber_count", 0)
+    last = chapters[-1]
+    slug = last.get("slug") or _slug(last.get("title", ""))
+    title = last.get("title", "Último capítulo")
+    chapter_num = len(chapters)
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def _chap_link(c: dict) -> str:
+        s = c.get("slug") or _slug(c.get("title", ""))
+        t = c.get("title", "Chapter")
+        return f'<li><a href="story/{s}.html">{t}</a></li>'
+    nav_chapters = "".join(_chap_link(c) for c in chapters)
+
+    seo_index = _seo_head_index(serial_title, base_url, theme, config)
+    index_html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{_escape_attr(serial_title, 80)}</title>
+{seo_index}
+  <style>{_theme_css(theme)}</style>
+</head>
+<body>
+  <header class="card" style="text-align:center;">
+    <h1 style="font-size:clamp(1.6rem, 5vw, 2.2rem);margin:0 0 0.5rem;">{serial_title}</h1>
+    <p class="muted" style="margin:0 0 0.75rem;">Un nuevo capítulo cada día</p>
+    <p style="margin:0;font-weight:600;color:var(--accent);">{subscriber_count:,} lectores</p>
+  </header>
+  <section class="card">
+    <h2 style="font-size:1.2rem;margin:0 0 1rem;">Último</h2>
+    <p style="margin:0 0 0.5rem;"><a href="story/{slug}.html"><strong>{title}</strong></a></p>
+    <p class="muted" style="margin:0;">Capítulo {chapter_num} · {now}</p>
+  </section>
+  <section class="card">
+    <h2 style="font-size:1.2rem;margin:0 0 1rem;">Capítulos</h2>
+    <ul style="list-style:none;padding:0;margin:0;">
+      {nav_chapters}
+    </ul>
+  </section>
+  {_contact_form_html(config)}
+  {_whatsapp_bubble_html(config)}
+</body>
+</html>"""
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "index.html").write_text(index_html, encoding="utf-8")
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    urls = [base_url + "/"] + [base_url + f"/story/{(c.get('slug') or _slug(c.get('title', '')))}.html" for c in chapters]
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for u in urls:
+        sitemap += f"  <url><loc>{u}</loc><lastmod>{now_iso}</lastmod></url>\n"
+    sitemap += "</urlset>"
+    (output_dir / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+
+
 def add_story_to_site(
     output_dir: Path,
     title: str,

@@ -174,6 +174,10 @@ def _ensure_mago_imagen_gemini(mago: dict, dia: int, out_dir: Path, config: dict
                 "fondo de teatro o cortinas oscuras, sin texto. La imagen debe mostrar claramente al mago, no objetos ni escenarios vacíos."
             )
             rel = generate_image(prompt, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=6)
+            if not rel:
+                # Fallback: prompt más corto en inglés (algunos magos fallan con el largo; Gemini responde mejor a prompts simples)
+                prompt_fallback = f"Editorial portrait of {nombre}, famous magician, head and shoulders, soft colors, no text."
+                rel = generate_image(prompt_fallback, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=4)
             if rel:
                 mago["foto"] = rel
                 return
