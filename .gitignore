@@ -16,6 +16,9 @@ venv/
 *.egg-info/
 .eggs/
 
+# Sesiones y datos de ejecución
+neo-desktop-agent/workspace/sessions/
+
 # IDE / OS
 .idea/
 .vscode/

@@ -55,15 +55,49 @@ def _save_descubiertos(out_dir: Path, lista: list) -> None:
         json.dump(lista, f, ensure_ascii=False, indent=2)
 
 
+def _normalize_mago(m: dict) -> dict:
+    """Asegura que un mago (de magos.json o descubierto por Ollama) tenga todas las claves necesarias."""
+    return {
+        "nombre": (m.get("nombre") or "Mago").strip(),
+        "pais": (m.get("pais") or "").strip(),
+        "pais_codigo": (m.get("pais_codigo") or "")[:2].upper() or "XX",
+        "nacimiento": str(m.get("nacimiento") or "").strip(),
+        "fallecimiento": m.get("fallecimiento"),
+        "ciudad_nacimiento": (m.get("ciudad_nacimiento") or "").strip(),
+        "bio_corta": (m.get("bio_corta") or "").strip() or "Mago destacado.",
+        "bio_larga": (m.get("bio_larga") or m.get("bio_corta") or "").strip() or "Sin biografía detallada.",
+        "aportaciones": [x for x in (m.get("aportaciones") or []) if isinstance(x, str) and x.strip()][:6],
+        "curiosidades": [x for x in (m.get("curiosidades") or []) if isinstance(x, str) and x.strip()][:5],
+        "frase_celebre": (m.get("frase_celebre") or "").strip() or None,
+        "legado": (m.get("legado") or "").strip() or None,
+        "especialidad": (m.get("especialidad") or "").strip() or None,
+        "foto": (m.get("foto") or "").strip() or "",
+    }
+
+
 def _fetch_nuevo_mago_ollama(used_names: list, config: dict) -> dict | None:
-    """Pide a Ollama un mago famoso REAL que no esté en used_names. Devuelve dict o None."""
+    """Pide a Ollama un mago famoso REAL que no esté en used_names. Devuelve dict normalizado o None."""
     url = (config.get("ollama_url") or "http://localhost:11434/api/generate").strip()
     model = config.get("model") or "qwen2.5:7b-instruct"
     lista_str = ", ".join(used_names[-50:]) if used_names else "(ninguno)"
     prompt = f"""Eres un experto en historia de la magia. Devuelve ÚNICAMENTE un JSON válido, sin markdown ni explicación.
 Un mago o mentalista famoso REAL que NO sea ninguno de: {lista_str}.
-El JSON debe tener estas claves: "nombre", "pais", "pais_codigo" (2 letras), "nacimiento" (año), "fallecimiento" (año o null), "ciudad_nacimiento", "bio_corta" (1-2 frases), "bio_larga" (párrafo detallado), "aportaciones" (array de 3-4 strings), "curiosidades" (array de 2-3 strings), "frase_celebre" (cita famosa del mago o sobre él; string o null), "legado" (1-2 frases sobre su influencia; string), "especialidad" (ej. "Escapismo", "Cartomagia"; string). Usa datos reales."""
-    body = json.dumps({"model": model, "prompt": prompt, "stream": False, "options": {"temperature": 0.5, "num_predict": 1500}})
+El JSON debe tener exactamente estas claves con MUCHA información:
+- "nombre": nombre artístico completo
+- "pais": país o países (ej. "Estados Unidos", "España")
+- "pais_codigo": 2 letras (US, ES, FR...)
+- "nacimiento": año (número)
+- "fallecimiento": año o null si sigue vivo
+- "ciudad_nacimiento": ciudad
+- "bio_corta": 1-2 frases resumen
+- "bio_larga": 2 o 3 párrafos detallados (vida, carrera, obras, anécdotas). Sé generoso con los datos.
+- "aportaciones": array de 4-5 strings (trucos, libros, influencia, premios)
+- "curiosidades": array de 3-4 strings (datos sorprendentes, anécdotas)
+- "frase_celebre": cita famosa del mago o sobre él (string; si no conoces una, inventa una coherente con su estilo)
+- "legado": 2-3 frases sobre su influencia en la magia y la cultura
+- "especialidad": una palabra o dos (Escapismo, Cartomagia, Mentalismo, Ilusionismo, etc.)
+Usa datos reales. Cuanta más información, mejor."""
+    body = json.dumps({"model": model, "prompt": prompt, "stream": False, "options": {"temperature": 0.4, "num_predict": 2200}})
     try:
         req = urllib.request.Request(url, data=body.encode("utf-8"), method="POST", headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=90) as resp:
@@ -73,7 +107,8 @@ El JSON debe tener estas claves: "nombre", "pais", "pais_codigo" (2 letras), "na
         if raw.startswith("```"):
             raw = re.sub(r"^```\w*\n?", "", raw)
             raw = re.sub(r"\n?```\s*$", "", raw)
-        return json.loads(raw)
+        data = json.loads(raw)
+        return _normalize_mago(data) if isinstance(data, dict) and data.get("nombre") else None
     except Exception:
         return None
 
@@ -186,13 +221,21 @@ _CSS_MAGO = """
       font-size: 1rem;
       overflow-x: hidden;
     }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 1rem 1rem 2rem; }
+    .magic-light { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .magic-light::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(105deg, transparent 35%, rgba(200,180,255,0.06) 48%, rgba(255,250,280,0.12) 50%, rgba(200,180,255,0.06) 52%, transparent 65%);
+      animation: magicBeam 6s ease-in-out infinite;
+    }
+    @keyframes magicBeam { 0% { transform: translateX(-25%) translateY(-25%); } 100% { transform: translateX(25%) translateY(25%); } }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 1rem 1rem 2rem; position: relative; z-index: 1; }
     @media (min-width: 600px) { .wrap { padding: 2rem 1.5rem; } }
     .back { display: inline-block; margin-bottom: 1rem; margin-right: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3d2a5c, #2a1a45); border-radius: 8px; color: #c9b8e8; text-decoration: none; border: 1px solid rgba(201,184,232,0.3); font-size: 0.95rem; transition: box-shadow 0.3s, transform 0.2s; }
     .back:hover { background: #4a3570; box-shadow: 0 0 20px rgba(201,184,232,0.3); }
     h1 { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 5vw, 2.5rem); margin-bottom: 0.25rem; color: #e8e4ef; text-shadow: 0 0 30px rgba(201,184,232,0.2); }
     .meta { font-size: 0.95rem; color: #c9b8e8; margin-bottom: 1rem; }
     .meta span { margin-right: 0.5rem; }
+    .tag-especialidad { display: inline-block; font-size: 0.8rem; background: rgba(80,50,120,0.5); color: #c9b8e8; padding: 0.2rem 0.5rem; border-radius: 12px; margin-left: 0.5rem; border: 1px solid rgba(201,184,232,0.2); }
     .foto-wrap { position: relative; margin: 1rem 0; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 40px rgba(180,120,255,0.15); border: 2px solid rgba(201,184,232,0.25); }
     .foto-wrap::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 40%, transparent 60%, rgba(255,255,255,0.08)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
     .foto { width: 100%; max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; object-position: center top; display: block; vertical-align: top; }
@@ -246,16 +289,16 @@ def _html_mago(mago: dict, dia: int, base_url: str, total_dias: int) -> str:
     if legado:
         legado_block = f'<div class="legado"><strong>Legado:</strong> {legado}</div>'
 
+    especialidad = (mago.get("especialidad") or "").strip()
+    tag_especialidad = f'<span class="tag-especialidad">{especialidad}</span>' if especialidad else ""
     datos_clave = []
-    if aportaciones:
-        datos_clave.append(aportaciones[0])
-    if len(aportaciones) > 1:
-        datos_clave.append(aportaciones[1])
-    if curiosidades:
-        datos_clave.append(curiosidades[0])
+    for a in (aportaciones or [])[:3]:
+        datos_clave.append(a)
+    for c in (curiosidades or [])[:2]:
+        datos_clave.append(c)
     datos_block = ""
     if datos_clave:
-        datos_block = '<div class="datos-clave">' + "".join(f"<span>{d}</span>" for d in datos_clave[:4]) + "</div>"
+        datos_block = '<div class="datos-clave">' + "".join(f"<span>{d}</span>" for d in datos_clave[:6]) + "</div>"
 
     nav = ""
     if dia > 1:
@@ -279,10 +322,11 @@ def _html_mago(mago: dict, dia: int, base_url: str, total_dias: int) -> str:
   </style>
 </head>
 <body>
+  <div class="magic-light" aria-hidden="true"></div>
   <div class="wrap">
     <nav>{nav}</nav>
     <h1>{nombre}</h1>
-    <p class="meta"><span>{meta}</span></p>
+    <p class="meta"><span>{meta}</span>{tag_especialidad}</p>
     <div class="foto-wrap">
       <img class="foto" src="{foto}" alt="{nombre}" loading="lazy" onerror="this.src='{placeholder_esc}'">
     </div>
@@ -360,6 +404,13 @@ def _html_index(magos_mostrados: list, out_dir: Path) -> str:
     .magic-bg span:nth-child(5) {{ left: 40%; top: 80%; animation-delay: 0.4s; }}
     .magic-bg span:nth-child(6) {{ left: 70%; top: 35%; animation-delay: 1.2s; }}
     @keyframes sparkle {{ 0%, 100% {{ opacity: 0.3; transform: scale(0.8); }} 50% {{ opacity: 0.9; transform: scale(1.2); }} }}
+    .magic-light {{ position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }}
+    .magic-light::before {{
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(105deg, transparent 35%, rgba(200,180,255,0.07) 48%, rgba(255,250,280,0.14) 50%, rgba(200,180,255,0.07) 52%, transparent 65%);
+      animation: magicBeam 6s ease-in-out infinite;
+    }}
+    @keyframes magicBeam {{ 0% {{ transform: translateX(-25%) translateY(-25%); }} 100% {{ transform: translateX(25%) translateY(25%); }} }}
     .wrap > * {{ position: relative; z-index: 1; }}
     h1 {{
       font-family: 'Cinzel', serif;
@@ -432,6 +483,7 @@ def _html_index(magos_mostrados: list, out_dir: Path) -> str:
 </head>
 <body>
   <div class="magic-bg"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="magic-light" aria-hidden="true"></div>
   <div class="wrap">
     <h1>✨ {titulo} ✨</h1>
     <p class="sub">Un mago cada día · Biografías, fotos y datos de magos de todo el mundo</p>
@@ -469,7 +521,6 @@ def run(task: str = "", **kwargs) -> str:
             used_names = [m.get("nombre", "") for m in magos_combined]
             nuevo = _fetch_nuevo_mago_ollama(used_names, config)
             if nuevo and nuevo.get("nombre"):
-                nuevo.setdefault("foto", "")
                 descubiertos.append(nuevo)
                 magos_combined = base_magos + descubiertos
                 _save_descubiertos(out_dir, descubiertos)
