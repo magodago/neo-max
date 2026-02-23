@@ -150,9 +150,29 @@ def _placeholder_photo_url(nombre: str) -> str:
     return f"https://placehold.co/400x500/1a1525/c9b8e8?text={urllib.parse.quote(text)}"
 
 
+def _rasgos_mago(mago: dict) -> str:
+    """Descripción corta de rasgos distintivos del mago para que la imagen sea reconocible (nombre, país, época, rasgos conocidos)."""
+    nombre = mago.get("nombre", "")
+    # Rasgos conocidos para magos muy famosos (retrato reconocible)
+    rasgos_por_nombre = {
+        "Harry Houdini": "man in early 20th century style, strong build, dark hair, intense gaze, escape artist",
+        "Juan Tamariz": "Spanish man, round friendly face, often with glasses, cards in hand, Madrid magician",
+        "David Copperfield": "American man, dark wavy hair, charismatic smile, 1980s-90s illusionist style",
+        "Dai Vernon": "elderly man, white hair, gentle face, card magic, classic close-up magician",
+        "Penn & Teller": "two men: one tall and heavy with long dark hair who talks, one short and silent with glasses; duo magicians",
+        "Robert-Houdin": "French man, 19th century, formal suit, elegant posture, father of modern magic",
+    }
+    if nombre in rasgos_por_nombre:
+        return rasgos_por_nombre[nombre]
+    pais = mago.get("pais", "")
+    nac = mago.get("nacimiento", "")
+    esp = mago.get("especialidad", "")
+    return f"famous magician from {pais}, era {nac}, {esp}, recognizable portrait"
+
+
 def _ensure_mago_imagen_gemini(mago: dict, dia: int, out_dir: Path, config: dict, forzar_gemini: bool = False) -> None:
-    """Genera la foto del mago: 1) Gemini (caricatura) si hay API key, 2) Wikipedia, 3) placeholder con nombre.
-    Si forzar_gemini=True, intenta Gemini aunque exista archivo local (para regenerar con caricaturas)."""
+    """Genera la foto del mago con los rasgos del mago: 1) Gemini (caricatura reconocible) si hay API key, 2) placeholder con nombre.
+    Si forzar_gemini=True, intenta Gemini aunque exista archivo local."""
     img_rel = f"images/mago_{dia:03d}.png"
     local = out_dir / img_rel
     nombre = mago.get("nombre", "mago")
@@ -162,30 +182,29 @@ def _ensure_mago_imagen_gemini(mago: dict, dia: int, out_dir: Path, config: dict
     root = _agent_root()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
-    # 1) Intentar Gemini: caricatura/ilustración del mago (evita problemas de derechos y da mejor resultado)
+    rasgos = _rasgos_mago(mago)
     if config.get("gemini_api_key") or __import__("os").environ.get("GEMINI_API_KEY"):
         try:
             from gemini_image import generate_image
             pais = mago.get("pais", "")
             nac = mago.get("nacimiento", "")
+            # Prompt principal: nombre + rasgos distintivos para que la imagen sea del mago, no genérica
             prompt = (
-                f"Caricatura amable y colorida de {nombre}, mago o mentalista famoso de {pais} (época {nac}). "
-                "Estilo ilustración editorial: retrato desde hombros arriba, cara bien visible y centrada, "
-                "fondo de teatro o cortinas oscuras, sin texto. La imagen debe mostrar claramente al mago, no objetos ni escenarios vacíos."
+                f"Friendly cartoon or editorial illustration of {nombre}, {rasgos}. "
+                f"From {pais}, era {nac}. Head and shoulders, face clearly visible and recognizable, "
+                "stage or curtain background, no text. The image must look like this specific magician, not a generic magician."
             )
-            rel = generate_image(prompt, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=2)
+            rel = generate_image(prompt, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=4)
             if not rel:
-                prompt_fallback = f"Editorial portrait of {nombre}, famous magician, head and shoulders, soft colors, no text."
-                rel = generate_image(prompt_fallback, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=1)
-            if not rel:
-                prompt_generic = "Friendly cartoon portrait of a magician, head and shoulders, stage curtains background, purple and gold tones, no text."
-                rel = generate_image(prompt_generic, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=1)
+                # Fallback: mismo nombre y rasgos, prompt más corto en inglés
+                prompt_short = f"Editorial portrait of {nombre}, {rasgos}. Head and shoulders, soft colors, no text."
+                rel = generate_image(prompt_short, f"mago_{dia:03d}", out_dir, model=config.get("gemini_image_model", ""), max_retries=3)
             if rel:
                 mago["foto"] = rel
                 return
         except Exception:
             pass
-    # 2) No usar Wikipedia: estilo inconsistente y a veces problemas de derechos. Usar placeholder con el nombre del mago.
+    # Sin Gemini o falló: placeholder con el nombre del mago (nunca imagen genérica de otro mago)
     mago["foto"] = _placeholder_photo_url(nombre)
 
 
