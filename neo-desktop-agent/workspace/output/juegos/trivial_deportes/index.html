@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Trivial: Deportes</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(180deg,#0a0a12 0%,#1a1a2e 50%,#16213e 100%);min-height:100vh;overflow:hidden;touch-action:manipulation;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+h1{font-size:clamp(1rem,4vw,1.4rem);margin-bottom:8px;}
+#c{position:relative;border-radius:16px;overflow:hidden;border:2px solid rgba(79,195,247,0.35);box-shadow:0 0 50px rgba(79,195,247,0.12);}
+
+#c{width:min(100vw,420px);min-height:320px;padding:1.2rem;background:rgba(0,0,0,0.35);}
+#pregunta{font-size:1.15rem;font-weight:600;margin-bottom:1rem;line-height:1.4;}
+#opciones{display:flex;flex-direction:column;gap:10px;}
+#opciones button{padding:14px 18px;text-align:left;background:rgba(79,195,247,0.15);border:2px solid rgba(79,195,247,0.5);border-radius:12px;color:#fff;font-size:1rem;cursor:pointer;}
+#opciones button:hover{background:rgba(79,195,247,0.3);}
+#opciones button.correcto{border-color:#4ade80;background:rgba(74,222,128,0.25);}
+#opciones button.incorrecto{border-color:#ef4444;background:rgba(239,68,68,0.2);}
+#puntos{position:absolute;top:12px;right:12px;font-weight:700;color:#4fc3f7;}
+#btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);z-index:10;}
+#btn button{padding:18px 36px;font-size:1.2rem;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;}
+#fin{font-size:1.3rem;font-weight:700;text-align:center;padding:1rem;}
+
+</style>
+</head>
+<body>
+<h1>Trivial: Deportes</h1>
+<div id="c"><div id="pregunta"></div><div id="opciones"></div><div id="puntos">0 / 0</div><div id="btn"><button>JUGAR</button></div><div id="fin" style="display:none;"></div></div>
+<script>
+var preguntas=[{"p": "Cuantos jugadores hay en un equipo de futbol en el campo?", "o": ["9", "10", "11", "12"], "c": 2}, {"p": "En que pais nacio el tenis?", "o": ["Francia", "Inglaterra", "Espana", "USA"], "c": 1}, {"p": "Cada cuantos anos se celebra el Mundial de futbol?", "o": ["2", "3", "4", "5"], "c": 2}, {"p": "Que pais gano el Mundial 2022?", "o": ["Francia", "Brasil", "Argentina", "Alemania"], "c": 2}, {"p": "Cual es el torneo de tenis mas antiguo?", "o": ["US Open", "Roland Garros", "Wimbledon", "Australia Open"], "c": 2}, {"p": "En que deporte se usa un birdie?", "o": ["Tenis", "Badminton", "Padel", "Squash"], "c": 1}];
+var idx=0,puntos=0,btn=document.getElementById('btn'),fin=document.getElementById('fin');
+function mostrar(){
+document.getElementById('pregunta').textContent=(idx+1)+'. '+preguntas[idx].p;
+var op=document.getElementById('opciones');op.innerHTML='';
+for(var i=0;i<preguntas[idx].o.length;i++){
+var b=document.createElement('button');b.textContent=preguntas[idx].o[i];b.dataset.i=i;
+b.onclick=function(){var i=parseInt(this.dataset.i);var correcta=preguntas[idx].c;var btns=op.querySelectorAll('button');for(var j=0;j<btns.length;j++){btns[j].disabled=true;if(parseInt(btns[j].dataset.i)===correcta)btns[j].classList.add('correcto');else if(parseInt(btns[j].dataset.i)===i&&i!==correcta)btns[j].classList.add('incorrecto');}
+if(i===correcta)puntos++;document.getElementById('puntos').textContent=puntos+' / '+(idx+1);
+setTimeout(function(){idx++;if(idx>=preguntas.length){document.getElementById('c').querySelector('#pregunta,#opciones').innerHTML='';fin.style.display='block';fin.textContent='Resultado: '+puntos+' / '+preguntas.length;fin.style.color=puntos>=preguntas.length/2?'#4ade80':'#f59e0b';}else mostrar();},1200);};
+op.appendChild(b);}
+document.getElementById('puntos').textContent=puntos+' / '+(idx+1);
+}
+btn.querySelector('button').onclick=function(){idx=0;puntos=0;btn.style.display='none';fin.style.display='none';document.getElementById('puntos').textContent='0 / 0';mostrar();};
+</script>
+</body>
+</html>

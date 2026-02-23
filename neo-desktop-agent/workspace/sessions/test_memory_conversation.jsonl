@@ -1,0 +1,12 @@
+{"role": "user", "content": "¿Cómo te llamas?"}
+{"role": "assistant", "content": "Me llamo NEO. Soy tu agente de escritorio con control del PC, navegador, documentos y skills."}
+{"role": "user", "content": "Voy a cenar con mis hijas"}
+{"role": "assistant", "content": "Qué bien, disfrutad. 😊"}
+{"role": "user", "content": "¿Cómo te llamas?"}
+{"role": "assistant", "content": "Me llamo NEO. Soy tu agente de escritorio con control del PC, navegador, documentos y skills."}
+{"role": "user", "content": "Voy a cenar con mis hijas"}
+{"role": "assistant", "content": "Qué bien, disfrutad. 😊"}
+{"role": "user", "content": "¿De qué hemos hablado?"}
+{"role": "assistant", "content": "Hemos hablado de:\n- ¿Cómo te llamas?\n- Voy a cenar con mis hijas\n- ¿Cómo te llamas?\n- Voy a cenar con mis hijas"}
+{"role": "user", "content": "¿Qué skills tienes?"}
+{"role": "assistant", "content": "Skills disponibles: ninguno cargado. Puedo ejecutar cada uno con SKILL:<nombre> <argumentos>."}

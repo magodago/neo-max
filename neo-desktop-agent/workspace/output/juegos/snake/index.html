@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Serpiente clasica</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(180deg,#0a0a12 0%,#1a1a2e 50%,#16213e 100%);min-height:100vh;overflow:hidden;touch-action:manipulation;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+h1{font-size:clamp(1rem,4vw,1.4rem);margin-bottom:8px;}
+#c{position:relative;border-radius:16px;overflow:hidden;border:2px solid rgba(79,195,247,0.35);box-shadow:0 0 50px rgba(79,195,247,0.12);}
+
+#c{width:min(90vw,380px);height:min(90vw,380px);background:#0d1b0d;display:flex;align-items:center;justify-content:center;}
+#can{width:100%;height:100%;display:block;border-radius:8px;}
+#puntos{position:absolute;top:10px;left:10px;font-weight:700;color:#4ade80;z-index:5;}
+#btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);z-index:10;}
+#btn button{padding:16px 32px;font-size:1.2rem;background:linear-gradient(135deg,#4ade80,#16a34a);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;}
+#controles{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;margin-top:10px;}
+#controles button{width:56px;height:56px;border-radius:12px;background:rgba(74,222,128,0.25);border:2px solid #4ade80;color:#fff;font-size:1.2rem;cursor:pointer;}
+
+</style>
+</head>
+<body>
+<h1>Serpiente clasica</h1>
+
+<div id="c"><canvas id="can"></canvas><div id="puntos">0</div><div id="btn"><button>JUGAR</button></div></div>
+<div id="controles" style="display:none;"><button id="izq">&#9664;</button><button id="arriba">&#9650;</button><button id="der">&#9654;</button><button id="abajo">&#9660;</button></div>
+
+<script>
+var can=document.getElementById('can'),ctx=can.getContext('2d'),pt=document.getElementById('puntos'),btn=document.getElementById('btn'),ctr=document.getElementById('controles');
+var W=can.width=can.offsetWidth,H=can.height=can.offsetHeight,cel=Math.min(Math.floor(W/18),Math.floor(H/18)),cols=Math.floor(W/cel),fil=Math.floor(H/cel);
+var snake=[{x:Math.floor(cols/2),y:Math.floor(fil/2)}],dir='R',food={x:0,y:0},puntos=0,jugando=false,timer;
+function draw(){
+ctx.fillStyle='#0d1b0d';ctx.fillRect(0,0,W,H);
+for(var i=0;i<snake.length;i++){ctx.fillStyle=i===0?'#4ade80':'#22c55e';ctx.fillRect(snake[i].x*cel+1,snake[i].y*cel+1,cel-2,cel-2);}
+ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(food.x*cel+cel/2,food.y*cel+cel/2,cel/2-2,0,6.28);ctx.fill();
+}
+function nuevaComida(){do{food.x=Math.floor(Math.random()*cols);food.y=Math.floor(Math.random()*fil);}while(snake.some(function(s){return s.x===food.x&&s.y===food.y;}));}
+function step(){
+if(!jugando)return;
+var h=snake[0],nx=h.x,ny=h.y;
+if(dir==='R')nx++;if(dir==='L')nx--;if(dir==='U')ny--;if(dir==='D')ny++;
+if(nx<0||nx>=cols||ny<0||ny>=fil||snake.some(function(s){return s.x===nx&&s.y===ny;})){jugando=false;btn.style.display='flex';btn.querySelector('button').textContent='REINTENTAR ('+puntos+')';return;}
+snake.unshift({x:nx,y:ny});
+if(nx===food.x&&ny===food.y){puntos++;pt.textContent=puntos;nuevaComida();}else snake.pop();
+draw();setTimeout(step,120);
+}
+document.getElementById('izq').onclick=function(){if(dir!=='R')dir='L';};
+document.getElementById('der').onclick=function(){if(dir!=='L')dir='R';};
+document.getElementById('arriba').onclick=function(){if(dir!=='D')dir='U';};
+document.getElementById('abajo').onclick=function(){if(dir!=='U')dir='D';};
+document.onkeydown=function(e){e.preventDefault();if(e.code==='ArrowLeft'&&dir!=='R')dir='L';if(e.code==='ArrowRight'&&dir!=='L')dir='R';if(e.code==='ArrowUp'&&dir!=='D')dir='U';if(e.code==='ArrowDown'&&dir!=='U')dir='D';};
+btn.querySelector('button').onclick=function(){var box=can.parentElement;can.width=box.clientWidth;can.height=box.clientHeight;W=can.width;H=can.height;cel=Math.min(Math.floor(W/18),Math.floor(H/18));cols=Math.floor(W/cel);fil=Math.floor(H/cel);snake=[{x:Math.floor(cols/2),y:Math.floor(fil/2)}];dir='R';puntos=0;pt.textContent='0';nuevaComida();jugando=true;btn.style.display='none';ctr.style.display='grid';draw();step();};
+</script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEO MAX – Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --bg-card: #111827;
+      --bg-card-hover: #1a2332;
+      --border: rgba(255,255,255,.08);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --green: #10b981;
+      --green-glow: rgba(16,185,129,.25);
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --shadow: 0 10px 40px -15px rgba(0,0,0,.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 0 1.25rem 2.5rem;
+    }
+    .header {
+      background: linear-gradient(145deg, #1e1b4b 0%, #0f172a 40%, #0a0e17 100%);
+      margin: 0 -1.25rem 2rem;
+      padding: 2rem 1.5rem;
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(ellipse, rgba(99,102,241,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      position: relative;
+    }
+    .header p { font-size: 0.9375rem; color: var(--muted); margin-top: 0.35rem; position: relative; }
+    #data-source {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.12);
+    }
+    .stat-card .icon { width: 28px; height: 28px; margin-bottom: 0.6rem; opacity: .9; }
+    .stat-card .value { font-size: 1.6rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .stat-card .label { font-size: 0.8125rem; color: var(--muted); margin-top: 0.2rem; font-weight: 500; }
+    .stat-card.revenue .value { color: var(--green); }
+    .stat-card.revenue { border-color: rgba(16,185,129,.2); }
+    section { margin-bottom: 1.75rem; }
+    section h2 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 0;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th, td { text-align: left; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); }
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(0,0,0,.2);
+    }
+    tr:hover { background: var(--bg-card-hover); }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge.active { background: rgba(16,185,129,.2); color: var(--green); }
+    .badge.improve { background: rgba(245,158,11,.2); color: var(--yellow); }
+    .badge.discarded { background: rgba(239,68,68,.2); color: var(--red); }
+    .muted { color: var(--muted); font-size: 0.8125rem; }
+    .load-err {
+      color: var(--red);
+      padding: 1.25rem;
+      background: rgba(239,68,68,.1);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(239,68,68,.2);
+    }
+    .portals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .portal-link {
+      display: block;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 1.15rem 1.25rem;
+      color: var(--accent-light);
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    .portal-link:hover {
+      background: var(--bg-card-hover);
+      color: #a5b4fc;
+      border-color: rgba(99,102,241,.3);
+      transform: translateY(-1px);
+    }
+    .portal-link .label { font-size: 0.9375rem; }
+    .portal-link .url { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; word-break: break-all; }
+    .num { font-variant-numeric: tabular-nums; }
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+    footer code { background: rgba(255,255,255,.08); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.8em; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>NEO MAX Dashboard</h1>
+    <p>Seguimiento en vivo · Micro-SaaS creados por el loop · Se actualiza solo</p>
+  </header>
+  <p id="data-source" class="muted">Cargando dashboard_data.json…</p>
+  <section id="portals-section" style="display:none;">
+    <h2>Sitios creados – Ver contenido en vivo</h2>
+    <p class="muted" style="margin-bottom:0.85rem;">Enlaces a los portales que NEO va publicando. Ábrelos desde el móvil para ver el contenido.</p>
+    <div id="portals-list" class="portals-grid"></div>
+  </section>
+  <section id="summary-section" style="display:none;">
+    <div class="summary-grid">
+      <div class="stat-card">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span class="value num" id="total-tools">0</span>
+        <div class="label">Herramientas</div>
+      </div>
+      <div class="stat-card">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="value num" id="active-tools">0</span>
+        <div class="label">Activas</div>
+      </div>
+      <div class="stat-card">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="value num" id="total-visits">0</span>
+        <div class="label">Visitas</div>
+      </div>
+      <div class="stat-card">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span class="value num" id="total-clicks">0</span>
+        <div class="label">Clicks</div>
+      </div>
+      <div class="stat-card revenue">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="value num">$<span id="est-revenue">0</span></span>
+        <div class="label">Est. revenue</div>
+      </div>
+    </div>
+    <p id="rpm-note" class="muted" style="font-size:0.75rem;"></p>
+    <p id="metrics-hint" class="muted" style="font-size:0.75rem; margin-top:0.25rem; display:none;">Para ver visitas y clicks reales, importa métricas (GA4/CSV) con <code>python -m tools.import_metrics</code>.</p>
+  </section>
+  <section id="tools-section">
+    <h2>Herramientas <span id="tools-count-badge" class="muted" style="font-weight:600;"></span></h2>
+    <div class="card"><div id="tools-list"></div></div>
+  </section>
+  <section id="decisions-section">
+    <h2>Últimas decisiones</h2>
+    <div class="card"><div id="decisions-list"></div></div>
+  </section>
+  <footer>
+    Si configuraste <code>dashboard_repo_name</code> en config, el dashboard se publica en GitHub Pages y puedes abrirlo desde cualquier sitio (móvil, fuera de casa) en la URL que indica el log al exportar (ej. <code>https://tu-usuario.github.io/neo-max-dashboard/</code>). Ejecuta <code>python -m loop_saas review</code> para actualizar datos y publicar.
+  </footer>
+  <script>
+    (function() {
+      var dataPath = 'dashboard_data.json';
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', dataPath + '?t=' + (Date.now ? Date.now() : 0));
+      xhr.onload = function() {
+        if (xhr.status !== 200) {
+          document.getElementById('data-source').textContent = 'No se pudo cargar ' + dataPath + '. Ejecuta "python -m loop_saas review" para generar y publicar datos.';
+          document.getElementById('tools-list').innerHTML = '<p class="load-err">Coloca dashboard_data.json en la misma carpeta que este HTML, o ejecuta desde NEO MAX: python -m loop_saas review</p>';
+          return;
+        }
+        var data;
+        try {
+          data = JSON.parse(xhr.responseText);
+        } catch (e) {
+          document.getElementById('data-source').textContent = 'Error: dashboard_data.json no es JSON válido.';
+          document.getElementById('tools-list').innerHTML = '<p class="load-err">Reejecuta python -m loop_saas review</p>';
+          return;
+        }
+        var tools = data.tools || [];
+        var portals = data.portals || [];
+        var decisions = data.decisions || [];
+        var s = data.summary || {};
+
+        function fmtNum(n) {
+          if (n == null || n === '') return '0';
+          var x = Number(n);
+          if (isNaN(x)) return String(n);
+          return x >= 1000 ? x.toLocaleString('es') : String(x);
+        }
+
+        document.getElementById('data-source').textContent = 'Actualizado: ' + (data.generated_at || '—') + ' · ' + tools.length + ' herramientas · ' + decisions.length + ' decisiones';
+
+        if (portals.length) {
+          document.getElementById('portals-section').style.display = 'block';
+          var pHtml = '';
+          portals.forEach(function(p) {
+            var url = p.base_url || ('https://' + (p.name || '') + '.github.io');
+            pHtml += '<a href="' + url + '" target="_blank" rel="noopener" class="portal-link"><span class="label">' + (p.label || p.name || 'Portal') + '</span><span class="url">' + url + '</span></a>';
+          });
+          document.getElementById('portals-list').innerHTML = pHtml;
+        }
+
+        document.getElementById('summary-section').style.display = 'block';
+        document.getElementById('total-tools').textContent = fmtNum(s.total_tools != null ? s.total_tools : tools.length);
+        document.getElementById('active-tools').textContent = fmtNum(s.active_tools != null ? s.active_tools : 0);
+        document.getElementById('total-visits').textContent = fmtNum(s.total_visits != null ? s.total_visits : 0);
+        document.getElementById('total-clicks').textContent = fmtNum(s.total_clicks != null ? s.total_clicks : 0);
+        document.getElementById('est-revenue').textContent = s.estimated_revenue_usd != null ? Number(s.estimated_revenue_usd).toFixed(2) : '0';
+        document.getElementById('rpm-note').textContent = s.rpm_note || '';
+        if ((s.total_visits == null || s.total_visits === 0) && (s.total_clicks == null || s.total_clicks === 0) && tools.length > 0) {
+          document.getElementById('metrics-hint').style.display = 'block';
+        }
+
+        document.getElementById('tools-count-badge').textContent = '(' + tools.length + ')';
+
+        var html = '<table><thead><tr><th>Herramienta</th><th>Estado</th><th>Calidad</th><th>Score</th><th>Visitas</th><th>Clicks</th><th>Creado</th></tr></thead><tbody>';
+        tools.forEach(function(t) {
+          var status = (t.status || 'active');
+          var badgeClass = 'badge ' + status;
+          html += '<tr><td><strong>' + (t.title || t.slug || '') + '</strong><br><span class="muted">' + (t.slug || '') + '</span></td><td><span class="' + badgeClass + '">' + status + '</span></td><td class="num">' + (t.quality_score != null ? t.quality_score : '–') + '</td><td class="num">' + (t.score_final != null ? t.score_final : '–') + '</td><td class="num">' + fmtNum(t.visits) + '</td><td class="num">' + fmtNum(t.clicks) + '</td><td class="muted">' + (t.created_at || '') + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        document.getElementById('tools-list').innerHTML = tools.length ? html : '<p class="muted" style="padding:1.25rem;">Aún no hay herramientas. El loop las irá añadiendo.</p>';
+
+        var dHtml = '<table><thead><tr><th>Tool</th><th>Acción</th><th>Score</th><th>Razón</th><th>Fecha</th></tr></thead><tbody>';
+        decisions.slice(0, 30).forEach(function(d) {
+          dHtml += '<tr><td>' + (d.tool_slug || '') + '</td><td>' + (d.action || '') + '</td><td class="num">' + (d.score_final != null ? d.score_final : '') + '</td><td>' + (d.reason || '') + '</td><td class="muted">' + (d.created_at || '') + '</td></tr>';
+        });
+        dHtml += '</tbody></table>';
+        document.getElementById('decisions-list').innerHTML = decisions.length ? dHtml : '<p class="muted" style="padding:1.25rem;">Sin decisiones aún.</p>';
+      };
+      xhr.onerror = function() {
+        document.getElementById('data-source').textContent = 'Error al cargar. Asegúrate de abrir el dashboard desde la misma URL que dashboard_data.json (ej. GitHub Pages) o ejecuta: python -m loop_saas review';
+        document.getElementById('tools-list').innerHTML = '<p class="load-err">Ejecuta en NEO MAX: python -m loop_saas review (y publica de nuevo si usas dashboard_repo_name)</p>';
+      };
+      xhr.send();
+    })();
+  </script>
+</body>
+</html>

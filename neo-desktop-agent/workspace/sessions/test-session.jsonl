@@ -1,0 +1,8 @@
+{"role": "user", "content": "Hola, como te llamas?"}
+{"role": "assistant", "content": "Me llamo NEO. Soy tu agente de escritorio con control del PC, navegador, documentos y skills."}
+{"role": "user", "content": "Que skills tienes?"}
+{"role": "assistant", "content": "Skills disponibles: chiste, clima, compra_ingredientes, cursos, documentos_imagenes, estado_pc, example_clock, hora_mundo, juegos_movil, qr, web_sitio. Puedo ejecutar cada uno con SKILL:<nombre> <argumentos>."}
+{"role": "user", "content": "Enviamela ficha tecnica del jugador Mbappe"}
+{"role": "assistant", "content": "Máximo de pasos alcanzado. Revisa el historial."}
+{"role": "user", "content": "Enviame la ficha tecnica del jugador Mbappe"}
+{"role": "assistant", "content": "La ficha técnica del jugador Kylian Mbappé se ha generado en el siguiente archivo HTML: C:\\Users\\dorti\\Desktop\\NEO MAX\\neo-desktop-agent\\workspace\\output\\ficha_jugador\\ficha_Kylian_Mbappé.html. Puedes abrirlo para ver la información detallada o subirlo a GitHub con GITHUB:push."}

@@ -1,0 +1,11 @@
+# Token y secretos (nunca subir)
+.env
+
+# Output generado
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/

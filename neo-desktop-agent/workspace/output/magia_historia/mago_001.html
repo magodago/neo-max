@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Harry Houdini · Historia de la Magia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Source Serif 4', Georgia, serif; }
+    h1 { font-family: 'Cinzel', serif; }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0a0612; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: #0a0612;
+      background-image: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(120,80,180,0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 50%, rgba(180,100,255,0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(140,80,200,0.06), transparent);
+      color: #e8e4ef;
+      min-height: 100vh;
+      line-height: 1.7;
+      font-size: 1rem;
+      overflow-x: hidden;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 1rem 1rem 2rem; }
+    @media (min-width: 600px) { .wrap { padding: 2rem 1.5rem; } }
+    .back { display: inline-block; margin-bottom: 1rem; margin-right: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #3d2a5c, #2a1a45); border-radius: 8px; color: #c9b8e8; text-decoration: none; border: 1px solid rgba(201,184,232,0.3); font-size: 0.95rem; transition: box-shadow 0.3s, transform 0.2s; }
+    .back:hover { background: #4a3570; box-shadow: 0 0 20px rgba(201,184,232,0.3); }
+    h1 { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 5vw, 2.5rem); margin-bottom: 0.25rem; color: #e8e4ef; text-shadow: 0 0 30px rgba(201,184,232,0.2); }
+    .meta { font-size: 0.95rem; color: #c9b8e8; margin-bottom: 1rem; }
+    .meta span { margin-right: 0.5rem; }
+    .foto-wrap { position: relative; margin: 1rem 0; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 40px rgba(180,120,255,0.15); border: 2px solid rgba(201,184,232,0.25); }
+    .foto-wrap::before { content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 2px; background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 40%, transparent 60%, rgba(255,255,255,0.08)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+    .foto { width: 100%; max-width: 100%; height: auto; max-height: 70vh; object-fit: contain; object-position: center top; display: block; vertical-align: top; }
+    .bio { margin: 1.25rem 0; padding: 1.25rem; background: rgba(61,42,92,0.4); border-radius: 12px; border-left: 4px solid #9b8ab8; color: #e8e4ef; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .bio p { margin-bottom: 0.75rem; color: #e8e4ef; }
+    .bio p:last-child { margin-bottom: 0; }
+    .quote { margin: 1.5rem 0; padding: 1.25rem 1.5rem; background: linear-gradient(135deg, rgba(80,50,120,0.4), rgba(50,30,80,0.4)); border-radius: 12px; border-left: 4px solid #c9b8e8; font-style: italic; color: #e0d8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .quote p { margin: 0; font-size: 1.05rem; }
+    .legado { margin: 1rem 0; padding: 1rem 1.25rem; background: rgba(40,25,70,0.5); border-radius: 12px; border: 1px solid rgba(201,184,232,0.2); color: #d8d0f0; font-size: 0.98rem; }
+    .legado strong { color: #c9b8e8; }
+    h2 { font-family: 'Cinzel', serif; font-size: 1.15rem; margin: 1.75rem 0 0.5rem; color: #b8a5d8; }
+    ul { padding-left: 1.25rem; margin: 0.5rem 0 1rem; color: #e8e4ef; }
+    li { margin: 0.4rem 0; }
+    .curiosidades { font-style: italic; color: #e0d8f0; }
+    .datos-clave { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+    .datos-clave span { display: block; padding: 0.5rem 0.75rem; background: rgba(61,42,92,0.35); border-radius: 8px; font-size: 0.9rem; color: #e0d8f0; border: 1px solid rgba(201,184,232,0.15); }
+    footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; color: #a098b8; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav><a class="back" href="index.html">← Índice</a> <a class="back" href="mago_002.html">Siguiente →</a></nav>
+    <h1>Harry Houdini</h1>
+    <p class="meta"><span>Hungría / Estados Unidos · Budapest · 1874 – 1926</span></p>
+    <div class="foto-wrap">
+      <img class="foto" src="images/mago_001.png" alt="Harry Houdini" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=Harry%2BHoudini'">
+    </div>
+    <div class="quote"><p>«Lo que el público no ve es más importante que lo que ve.»</p></div>
+    <div class="bio">
+      <p>Erik Weisz nació en Budapest (Imperio austrohúngaro) y emigró con su familia a Estados Unidos siendo niño. Adoptó el nombre artístico Harry Houdini en honor al mago francés Robert-Houdin. Comenzó en el mundo del vodevil con trucos de cartas y luego se especializó en escapismos: esposas, cadenas, camisas de fuerza colgado boca abajo, la celda de la muerte (water torture cell) y el bidón de leche. Sus retos públicos contra policías y cerrajeros le dieron fama mundial. También desenmascaró espiritistas y charlatanes. Murió en Detroit por peritonitis tras recibir un puñetazo sin preparación.</p>
+    </div>
+    <div class="legado"><strong>Legado:</strong> Convirtió el escapismo en espectáculo de masas y estableció el mago como estrella mediática. Su lucha contra el fraude espiritista dejó huella en la cultura popular.</div>
+    <div class="datos-clave"><span>Escape de la celda de agua (water torture cell)</span><span>Escape de camisa de fuerza colgado</span><span>Su verdadero nombre era Erik Weisz.</span></div>
+    <h2>Aportaciones a la magia</h2>
+    <ul><li>Escape de la celda de agua (water torture cell)</li><li>Escape de camisa de fuerza colgado</li><li>Desenmascaramiento del espiritismo</li><li>Marketing y espectáculo mediático del ilusionismo</li></ul>
+    <h2>Curiosidades</h2>
+    <ul class="curiosidades"><li>Su verdadero nombre era Erik Weisz.</li><li>Fue el primer aviador en Australia (vuelo controlado).</li><li>Murió el 31 de octubre, día de Halloween.</li></ul>
+    <footer>Día 1 · Historia de la Magia · Creado con NEO</footer>
+  </div>
+</body>
+</html>

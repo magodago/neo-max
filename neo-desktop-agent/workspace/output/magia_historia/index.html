@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Historia de la Magia · Un mago cada día</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0a0612; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: #0a0612;
+      background-image: radial-gradient(ellipse 100% 60% at 50% -10%, rgba(100,60,160,0.2), transparent 50%),
+        radial-gradient(ellipse 80% 50% at 90% 20%, rgba(140,80,200,0.1), transparent 45%),
+        radial-gradient(ellipse 80% 50% at 10% 80%, rgba(120,60,180,0.1), transparent 45%);
+      color: #e8e4ef;
+      min-height: 100vh;
+      padding: 1rem 1rem 2rem;
+      overflow-x: hidden;
+    }
+    @media (min-width: 600px) { body { padding: 2rem 1.5rem; } }
+    .wrap { max-width: 1000px; margin: 0 auto; position: relative; }
+    .magic-bg { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+    .magic-bg span { position: absolute; width: 4px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 50%; animation: sparkle 4s ease-in-out infinite; }
+    .magic-bg span:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+    .magic-bg span:nth-child(2) { left: 25%; top: 60%; animation-delay: 0.8s; }
+    .magic-bg span:nth-child(3) { left: 60%; top: 15%; animation-delay: 1.6s; }
+    .magic-bg span:nth-child(4) { left: 80%; top: 50%; animation-delay: 2.4s; }
+    .magic-bg span:nth-child(5) { left: 40%; top: 80%; animation-delay: 0.4s; }
+    .magic-bg span:nth-child(6) { left: 70%; top: 35%; animation-delay: 1.2s; }
+    @keyframes sparkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 0.9; transform: scale(1.2); } }
+    .wrap > * { position: relative; z-index: 1; }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.75rem, 5vw, 3rem);
+      text-align: center;
+      margin-bottom: 0.5rem;
+      color: #e8e4ef;
+      text-shadow: 0 0 40px rgba(201,184,232,0.25);
+    }
+    .sub {
+      text-align: center;
+      color: #c9b8e8;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    @media (min-width: 600px) { .grid { gap: 1.5rem; } }
+    .card {
+      background: linear-gradient(160deg, rgba(61,42,92,0.5), rgba(40,25,70,0.5));
+      border-radius: 20px;
+      padding: 1.25rem;
+      border: 1px solid rgba(201,184,232,0.25);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(180,120,255,0.2);
+      border-color: rgba(201,184,232,0.45);
+    }
+    .card a { text-decoration: none; color: inherit; display: block; }
+    .card-img-wrap {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    .card-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      box-shadow: inset 0 0 30px rgba(180,120,255,0.08);
+      pointer-events: none;
+    }
+    .card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      object-position: center 25%;
+      display: block;
+      vertical-align: top;
+    }
+    .card-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: #c9b8e8;
+      background: rgba(80,50,120,0.5);
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      margin-bottom: 0.5rem;
+      border: 1px solid rgba(201,184,232,0.2);
+    }
+    .card h3 { font-family: 'Cinzel', serif; font-size: 1.15rem; margin-bottom: 0.3rem; color: #e8e4ef; }
+    .card .pais { font-size: 0.85rem; color: #b8a5d8; margin-bottom: 0.4rem; }
+    .card .resumen { font-size: 0.9rem; line-height: 1.5; color: #e0d8f0; }
+    footer { text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #a098b8; }
+  </style>
+</head>
+<body>
+  <div class="magic-bg"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="wrap">
+    <h1>✨ Historia de la Magia ✨</h1>
+    <p class="sub">Un mago cada día · Biografías, fotos y datos de magos de todo el mundo</p>
+    <div class="grid">
+
+    <article class="card">
+      <a href="mago_001.html">
+        <div class="card-img-wrap"><img class="card-img" src="images/mago_001.png" alt="Harry Houdini" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=Harry%2BHoudini'"></div>
+        <span class="card-tag">Escapismo</span>
+        <h3>Harry Houdini</h3>
+        <p class="pais">Hungría / Estados Unidos</p>
+        <p class="resumen">El escapista más famoso de la historia. Revolucionó el ilusionismo con sus fugas imposibles y su capacidad para convertir la magia en espect…</p>
+      </a>
+    </article>
+
+    <article class="card">
+      <a href="mago_002.html">
+        <div class="card-img-wrap"><img class="card-img" src="https://upload.wikimedia.org/wikipedia/commons/3/39/Juan_Tamariz_durante_su_actuaci%C3%B3n_en_Puerto_del_Rosario_%28cropped%29.jpg" alt="Juan Tamariz" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=Juan%2BTamariz'"></div>
+        <span class="card-tag">Cartomagia</span>
+        <h3>Juan Tamariz</h3>
+        <p class="pais">España</p>
+        <p class="resumen">Referente mundial de la magia de cerca y la cartomagia. Creador del método Mnemonics y divulgador de la magia en televisión española.</p>
+      </a>
+    </article>
+
+    <article class="card">
+      <a href="mago_003.html">
+        <div class="card-img-wrap"><img class="card-img" src="https://upload.wikimedia.org/wikipedia/commons/5/50/Copperfield_cover_serial.jpg" alt="David Copperfield" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=David%2BCopperfield'"></div>
+        <span class="card-tag">Grandes ilusiones</span>
+        <h3>David Copperfield</h3>
+        <p class="pais">Estados Unidos</p>
+        <p class="resumen">Ilusionista de grandes ilusiones y uno de los magos más taquilleros de la historia. Famoso por hacer «desaparecer» la Estatua de la Libertad…</p>
+      </a>
+    </article>
+
+    <article class="card">
+      <a href="mago_004.html">
+        <div class="card-img-wrap"><img class="card-img" src="images/mago_004.png" alt="Dai Vernon" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=Dai%2BVernon'"></div>
+        <span class="card-tag">Magia de cerca</span>
+        <h3>Dai Vernon</h3>
+        <p class="pais">Canadá</p>
+        <p class="resumen">«El hombre que engañó a Houdini». Maestro de la magia de cerca y la cartomagia; influyó en generaciones de magos en Estados Unidos.</p>
+      </a>
+    </article>
+
+    <article class="card">
+      <a href="mago_005.html">
+        <div class="card-img-wrap"><img class="card-img" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Penn_%26_Teller_%28cropped%29.jpg" alt="Penn & Teller" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=Penn%2B%26%2BTeller'"></div>
+        <span class="card-tag">Magia y escepticismo</span>
+        <h3>Penn & Teller</h3>
+        <p class="pais">Estados Unidos</p>
+        <p class="resumen">Dúo que combina magia, humor negro y desenmascaramiento. Actúan en Las Vegas y en televisión; a veces revelan el truco y aun así sorprenden.</p>
+      </a>
+    </article>
+
+    <article class="card">
+      <a href="mago_006.html">
+        <div class="card-img-wrap"><img class="card-img" src="images/mago_006.png" alt="Robert-Houdin" loading="lazy" onerror="this.src='https://placehold.co/400x500/1a1525/c9b8e8?text=Robert-Houdin'"></div>
+        <span class="card-tag">Teatro mágico</span>
+        <h3>Robert-Houdin</h3>
+        <p class="pais">Francia</p>
+        <p class="resumen">Considerado el padre de la magia moderna. Relojero y creador de autómatas; llevó la magia del escenario de ferias al teatro elegante.</p>
+      </a>
+    </article>
+    </div>
+    <footer>6 magos · Creado con NEO</footer>
+  </div>
+</body>
+</html>

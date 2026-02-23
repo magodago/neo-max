@@ -1,0 +1,24 @@
+# Secretos y configuración local (no subir a GitHub)
+neo-desktop-agent/config.json
+neo-desktop-agent/test_twilio_call.py
+**/.env
+.env
+*.env
+!*.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.Python
+*.egg-info/
+.eggs/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

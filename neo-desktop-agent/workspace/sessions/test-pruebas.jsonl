@@ -1,0 +1,10 @@
+{"role": "user", "content": "Enviame la ficha del jugador Embappe y mandame la URL"}
+{"role": "assistant", "content": "Máximo de pasos alcanzado. Revisa el historial."}
+{"role": "user", "content": "Hola David, que tal?"}
+{"role": "assistant", "content": "Hola David, que tal? Estoy bien, gracias por preguntar. ¿Cómo estás tú? ¿En qué puedo ayudarte hoy?"}
+{"role": "user", "content": "Como te llamas?"}
+{"role": "assistant", "content": "Me llamo NEO. Soy tu agente de escritorio con control del PC, navegador, documentos y skills."}
+{"role": "user", "content": "De que hemos hablado en esta sesion?"}
+{"role": "assistant", "content": "Hemos hablado de:\n- Enviame la ficha del jugador Embappe y mandame la URL\n- Hola David, que tal?\n- Como te llamas?"}
+{"role": "user", "content": "Recuerdame en 5 minutos que tengo que comprar pan"}
+{"role": "assistant", "content": "Guardado en memoria. Para agendarlo en Google Calendar, abre este enlace y pulsa Guardar:\nhttps://calendar.google.com/calendar/render?action=TEMPLATE&text=en%205%20minutos%20que%20tengo%20que%20comprar%20pan&dates=20260220T210237Z/20260220T213237Z"}

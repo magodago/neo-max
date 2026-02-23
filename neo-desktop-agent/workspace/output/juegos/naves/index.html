@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>naves</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(180deg,#0a0a12 0%,#1a1a2e 50%,#16213e 100%);min-height:100vh;overflow:hidden;touch-action:manipulation;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+h1{font-size:clamp(1rem,4vw,1.4rem);margin-bottom:8px;}
+#c{position:relative;border-radius:16px;overflow:hidden;border:2px solid rgba(79,195,247,0.35);box-shadow:0 0 50px rgba(79,195,247,0.12);}
+
+#c{width:min(100vw,420px);height:min(75vh,560px);background:rgba(0,0,0,0.45);}
+#nave{width:44px;height:44px;background:linear-gradient(135deg,#00d9ff,#0099cc);border-radius:10px;position:absolute;bottom:24px;left:50%;transform:translateX(-50%);box-shadow:0 0 20px rgba(0,217,255,0.5);transition:left 0.06s;}
+#puntos{position:absolute;top:12px;left:12px;font-size:1.3rem;font-weight:700;color:#4fc3f7;z-index:10;}
+#vidas{position:absolute;top:12px;right:12px;color:#ff6b6b;z-index:10;}
+.bala{width:6px;height:14px;background:linear-gradient(#4fc3f7,#0288d1);border-radius:2px;position:absolute;}
+.enemigo{width:32px;height:32px;background:linear-gradient(135deg,#ff6b6b,#c92a2a);border-radius:8px;position:absolute;}
+#btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);z-index:20;}
+#btn button{padding:16px 32px;font-size:1.2rem;background:linear-gradient(135deg,#4fc3f7,#0288d1);border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;}
+#controles{display:flex;gap:16px;margin-top:10px;}
+#controles button{width:64px;height:64px;border-radius:50%;background:rgba(79,195,247,0.25);border:2px solid rgba(79,195,247,0.6);color:#fff;font-size:1.4rem;cursor:pointer;}
+
+</style>
+</head>
+<body>
+<h1>naves</h1>
+
+<div id="c">
+<div id="puntos">0</div>
+<div id="vidas">3</div>
+<div id="nave"></div>
+<div id="btn"><button>JUGAR</button></div>
+</div>
+<div id="controles" style="display:none;"><button id="izq">&#9664;</button><button id="disparo">DISPARO</button><button id="der">&#9654;</button></div>
+
+<script>
+var c=document.getElementById('c'),n=document.getElementById('nave'),pt=document.getElementById('puntos'),vd=document.getElementById('vidas'),btn=document.getElementById('btn'),ctr=document.getElementById('controles');
+var puntos=0,vidas=3,jugando=false,nx=50,balas=[],enemigos=[],ancho=c.offsetWidth,alto=c.offsetHeight;
+function px(v){return (v/100)*(ancho-44);}
+function mover(d){if(!jugando)return;nx=Math.max(0,Math.min(100,nx+d));n.style.left=px(nx)+'px';}
+function disparar(){if(!jugando||vidas<=0)return;var b=document.createElement('div');b.className='bala';b.x=px(nx)+18;b.y=alto-68;b.style.left=b.x+'px';b.style.top=b.y+'px';c.appendChild(b);balas.push(b);}
+function crearEnemigo(){if(!jugando||vidas<=0)return;var e=document.createElement('div');e.className='enemigo';e.x=Math.random()*(ancho-32);e.y=-36;e.vy=1.8+Math.random()*1.2;e.style.left=e.x+'px';e.style.top=e.y+'px';c.appendChild(e);enemigos.push(e);}
+function loop(){
+if(!jugando)return;
+for(var i=balas.length-1;i>=0;i--){var b=balas[i];b.y-=14;b.style.top=b.y+'px';if(b.y<-20){b.remove();balas.splice(i,1);continue;}
+for(var j=enemigos.length-1;j>=0;j--){var ev=enemigos[j];if(b.y<ev.y+32&&b.y+14>ev.y&&b.x+6>ev.x&&b.x<ev.x+32){puntos+=10;pt.textContent=puntos;b.remove();balas.splice(i,1);ev.remove();enemigos.splice(j,1);break;}}}
+for(var k=enemigos.length-1;k>=0;k--){var e=enemigos[k];e.y+=e.vy;e.style.top=e.y+'px';
+if(e.y+32>alto-70&&e.y<alto-24&&e.x+32>px(nx)&&e.x<px(nx)+44){vidas--;vd.textContent=vidas;e.remove();enemigos.splice(k,1);if(vidas<=0){jugando=false;btn.style.display='flex';btn.querySelector('button').textContent='REINTENTAR ('+puntos+' pts)';}}
+if(e.y>alto){e.remove();enemigos.splice(k,1);}}
+requestAnimationFrame(loop);
+}
+c.addEventListener('touchmove',function(ev){ev.preventDefault();if(ev.touches[0].clientX<c.getBoundingClientRect().left+ancho/2)mover(-5);else mover(5);});
+document.onkeydown=function(e){if(e.code==='ArrowLeft'){e.preventDefault();mover(-6);}if(e.code==='ArrowRight'){e.preventDefault();mover(6);}if(e.code==='Space'){e.preventDefault();disparar();}};
+document.getElementById('izq').onclick=function(){mover(-8);};document.getElementById('der').onclick=function(){mover(8);};
+document.getElementById('disparo').onclick=disparar;
+btn.querySelector('button').onclick=function(){jugando=true;puntos=0;vidas=3;pt.textContent='0';vd.textContent='3';while(c.querySelector('.bala'))c.querySelector('.bala').remove();while(c.querySelector('.enemigo'))c.querySelector('.enemigo').remove();balas=[];enemigos=[];btn.style.display='none';ctr.style.display='flex';n.style.left=px(50)+'px';nx=50;loop();setInterval(crearEnemigo,950);};
+</script>
+</body>
+</html>

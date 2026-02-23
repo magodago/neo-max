@@ -1,0 +1,63 @@
+{
+  "base_url": "https://magodago.github.io/saas-metrics-tools",
+  "portal_repo_name": "saas-metrics-tools",
+  "affiliate": {
+    "notion": {
+      "name": "Notion",
+      "url": "#",
+      "description": "All-in-one workspace."
+    },
+    "hubspot": {
+      "name": "HubSpot",
+      "url": "#",
+      "description": "CRM and marketing platform."
+    },
+    "monday": {
+      "name": "Monday",
+      "url": "#",
+      "description": "Work OS for teams."
+    },
+    "stripe": {
+      "name": "Stripe",
+      "url": "#",
+      "description": "Payments for the internet."
+    },
+    "quickbooks": {
+      "name": "QuickBooks",
+      "url": "#",
+      "description": "Accounting software."
+    },
+    "paddle": {
+      "name": "Paddle",
+      "url": "#",
+      "description": "SaaS billing and tax."
+    },
+    "chartmogul": {
+      "name": "ChartMogul",
+      "url": "#",
+      "description": "SaaS analytics and metrics."
+    }
+  },
+  "scoring": {
+    "keep_threshold": 70,
+    "improve_threshold": 50,
+    "quality_weight": 0.5,
+    "engagement_weight": 0.5
+  },
+  "blog": {
+    "initial_posts": 5,
+    "posts_per_week": 1,
+    "min_words": 1200
+  },
+  "placeholders": {
+    "adsense_div_id": "adsense",
+    "newsletter_action": "#",
+    "lead_magnet_action": "#"
+  },
+  "min_market_score": 65,
+  "cycle_hours": 1,
+  "review_hours": 24,
+  "portal_per_theme": true,
+  "github_user": "magodago",
+  "dashboard_repo_name": "neo-max-dashboard"
+}

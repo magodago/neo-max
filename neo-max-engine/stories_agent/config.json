@@ -1,0 +1,20 @@
+{
+  "niche": "misterio y terror para adultos, atmósfera inquietante, bestseller (nada infantil ni tierno)",
+  "repo_name": "daily-heartwarming-stories",
+  "base_url": "https://magodago.github.io/daily-heartwarming-stories",
+  "github_user": "magodago",
+  "interval_hours": 24, "publish_hour": 9, "publish_minute": 0,
+  "image_provider": "gemini",
+  "image_model": "gemini-2.5-flash-image",
+  "image_size": "1024x1024",
+  "story_max_words": 1200,
+  "serial_mode": true,
+  "genre": "horror",
+  "serial_theme": "terror",
+  "max_chapters_per_serial": 14,
+  "author_email": "dortizs76@gmail.com",
+  "formspree_form_id": "xykddydb",
+  "whatsapp_number": "+34658237988",
+  "advance_chapter_price_eur": 1,
+  "language": "es"
+}
