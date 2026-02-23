@@ -56,29 +56,53 @@ def _call_ollama(prompt: str, num_predict: int = 800, timeout: int | None = None
 
 
 def _parse_blocks(raw: str, block_names: list[str]) -> dict:
-    markers = [f"==={n.upper().replace(' ', '_')}===" for n in block_names]
+    """Parsea bloques con ===NAME=== o ### NAME ### (el modelo a veces devuelve ###)."""
+    markers_triple = [f"==={n.upper().replace(' ', '_')}===" for n in block_names]
+    markers_hash = [f"###{n.upper().replace(' ', '_')}###" for n in block_names]
+    markers_hash_spaced = [f"### {n.upper().replace(' ', '_')} ###" for n in block_names]
+    all_markers = markers_triple + markers_hash + markers_hash_spaced
     out = {}
     for i, name in enumerate(block_names):
-        marker = markers[i]
-        start = raw.find(marker)
+        start = -1
+        marker_len = 0
+        for m in (markers_triple[i], markers_hash[i], markers_hash_spaced[i]):
+            pos = raw.find(m)
+            if pos != -1:
+                start = pos
+                marker_len = len(m)
+                break
         if start == -1:
             alt = f"=={block_names[i].upper().replace(' ', '_')}=="
             pos = raw.find(alt)
             if pos != -1:
-                start = pos + len(alt)
-            else:
-                continue
-        else:
-            start += len(marker)
+                start = pos
+                marker_len = len(alt)
+        if start == -1:
+            continue
+        start += marker_len
         end = len(raw)
-        for m in markers:
-            if m != marker and raw.find(m, start) != -1:
-                pos = raw.find(m, start)
-                if pos < end:
-                    end = pos
+        for m in all_markers:
+            pos = raw.find(m, start)
+            if pos != -1 and pos < end:
+                end = pos
         text = raw[start:end].strip()
         out[name] = text
     return out
+
+
+def _sanitize_title_body_from_raw(raw_title: str, body: str) -> tuple[str, str]:
+    """Si el body contiene '### TITLE ... ### BODY', extrae título y cuerpo reales."""
+    if not body or "### TITLE" not in body or "### BODY" not in body:
+        return raw_title, body
+    m = re.search(r"#+\s*TITLE\s*(.*?)\s*#+\s*BODY\s*(.*)", body, re.DOTALL | re.IGNORECASE)
+    if m:
+        title_part = m.group(1).strip()
+        body_part = m.group(2).strip()
+        if title_part and len(title_part) < 200:
+            raw_title = title_part.split("\n")[0].strip()
+        if body_part and len(body_part) > 100:
+            body = body_part
+    return raw_title, body
 
 
 def _extract_body_fallback(raw: str) -> str:
@@ -153,10 +177,12 @@ Salida ÚNICAMENTE estos bloques, en este orden:
     serial_title = (blocks.get("SERIAL_TITLE") or "Serie diaria").split("\n")[0].strip()[:150]
     characters_str = (blocks.get("CHARACTERS") or "").split("\n")[0].strip()
     characters = [c.strip() for c in characters_str.split(",") if c.strip()][:5]
-    title = (blocks.get("TITLE") or "Capítulo 1").split("\n")[0].strip()[:200]
+    raw_title = (blocks.get("TITLE") or "Capítulo 1").split("\n")[0].strip()[:200]
     body = (blocks.get("BODY") or "").strip()
     if not body:
         body = _extract_body_fallback(raw).strip()
+    raw_title, body = _sanitize_title_body_from_raw(raw_title, body)
+    title = raw_title
     image_prompt = (blocks.get("IMAGE_PROMPT") or "").split("\n")[0].strip()[:300] or f"Escena de la historia: {title}"
     summary = (blocks.get("SUMMARY") or "").split("\n")[0].strip()[:400]
 
@@ -238,6 +264,7 @@ Escribe SOLO el Capítulo {next_num}. Extensión de capítulo de libro: entre 80
     if not body:
         body = _extract_body_fallback(raw).strip()
     raw_title = (blocks.get("TITLE") or f"Capítulo {next_num}").split("\n")[0].strip()[:200]
+    raw_title, body = _sanitize_title_body_from_raw(raw_title, body)
     # Si el modelo devolvió solo "Capítulo N", usar primeras palabras del body para el menú
     if raw_title.strip().lower() in (f"capítulo {next_num}", f"capitulo {next_num}") and body:
         first_words = body.replace("<p>", " ").replace("</p>", " ").strip()[:200].strip()

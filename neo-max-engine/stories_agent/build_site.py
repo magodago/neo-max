@@ -2,8 +2,24 @@
 Construye la web de historias: serial por capítulos, índice con ganchos sociales, diseño por tema, móvil primero.
 """
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
+
+
+def _sanitize_chapter_content(title: str, body_html: str) -> tuple[str, str]:
+    """Si body_html contiene '### TITLE ... ### BODY', extrae título y cuerpo reales (evita mostrarlos crudos)."""
+    if not body_html or "### TITLE" not in body_html or "### BODY" not in body_html:
+        return title, body_html
+    m = re.search(r"#+\s*TITLE\s*(.*?)\s*#+\s*BODY\s*(.*)", body_html, re.DOTALL | re.IGNORECASE)
+    if m:
+        title_part = m.group(1).strip()
+        body_part = m.group(2).strip()
+        if title_part and len(title_part) < 200:
+            title = title_part.split("\n")[0].strip()
+        if body_part and len(body_part) > 50:
+            body_html = body_part
+    return title, body_html
 
 # Temas visuales: colores, fuentes, fondos (móvil primero, aspecto profesional)
 THEMES = {
@@ -337,6 +353,7 @@ def add_chapter_to_serial_site(
     chapter_num: int,
 ) -> str:
     """Añade un capítulo al sitio serial: página del capítulo (tema + móvil) y actualiza índice + sitemap."""
+    title, body_html = _sanitize_chapter_content(title, body_html)
     slug = _slug(title)
     config = _load_config()
     base_url = (base_url or config.get("base_url", "")).rstrip("/")
